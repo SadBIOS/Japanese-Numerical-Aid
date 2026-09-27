@@ -1,1 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Western to Japanese Number Converter & Reference</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --accent: #dbeafe;
+        }
 
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--text-main);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            max-width: 800px;
+            width: 100%;
+            background-color: var(--card-bg);
+            padding: 32px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 24px;
+            margin-top: 0;
+            margin-bottom: 24px;
+            color: var(--text-main);
+        }
+
+        .presets {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 24px;
+            justify-content: center;
+        }
+
+        button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: background 0.2s ease;
+        }
+
+        button:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .input-group {
+            margin-bottom: 32px;
+        }
+
+        label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text-muted);
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 16px;
+            font-size: 20px;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            box-sizing: border-box;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        input[type="number"]:focus {
+            border-color: var(--primary);
+        }
+
+        .result-card {
+            background-color: var(--accent);
+            border-radius: 12px;
+            padding: 24px;
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .kanji-output {
+            font-size: 42px;
+            font-weight: 700;
+            color: var(--primary);
+            margin: 10px 0;
+            word-break: break-all;
+        }
+
+        .romaji-output {
+            font-size: 18px;
+            color: var(--text-main);
+            margin-bottom: 8px;
+        }
+
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            border-top: 2px dashed var(--border);
+            padding-top: 24px;
+            margin-bottom: 32px;
+        }
+
+        .col {
+            background: var(--bg);
+            padding: 16px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        .col h3 {
+            margin-top: 0;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+        }
+
+        .digit-block {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+            font-size: 18px;
+            word-break: break-all;
+        }
+
+        .highlight-unit {
+            color: var(--primary);
+            font-weight: bold;
+            font-size: 14px;
+            margin-left: 2px;
+            margin-right: 6px;
+        }
+
+        .reference-section {
+            border-top: 2px solid var(--border);
+            padding-top: 24px;
+        }
+
+        .reference-section h2 {
+            font-size: 18px;
+            margin-top: 0;
+            margin-bottom: 16px;
+            color: var(--text-main);
+        }
+
+        .tables-container {
+            display: flex;
+            gap: 24px;
+            flex-wrap: wrap;
+        }
+
+        .ref-table {
+            flex: 1;
+            min-width: 280px;
+            border-collapse: collapse;
+            font-size: 15px;
+        }
+
+        .ref-table th, .ref-table td {
+            text-align: left;
+            padding: 10px 12px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .ref-table th {
+            background-color: var(--bg);
+            color: var(--text-muted);
+            font-weight: 600;
+            font-size: 13px;
+            text-transform: uppercase;
+        }
+
+        ruby {
+            font-size: 18px;
+            font-weight: 500;
+            color: var(--text-main);
+        }
+
+        rt {
+            font-size: 10px;
+            color: var(--text-muted);
+        }
+
+        .romaji-col {
+            color: var(--text-muted);
+            font-family: ui-monospace, SFMono-Regular, monospace;
+            font-size: 14px;
+        }
+
+        /* Hide number input arrows */
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        input[type=number] {
+            -moz-appearance: textfield;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Western ↔ Japanese Number Converter</h1>
+        
+        <div class="presets">
+            <button onclick="setNumber(10000)">10,000</button>
+            <button onclick="setNumber(1000000)">1 Million</button>
+            <button onclick="setNumber(100000000)">100 Million</button>
+            <button onclick="setNumber(1000000000)">1 Billion</button>
+            <button onclick="setNumber(10000000000)">10 Billion</button>
+            <button onclick="setNumber(1000000000000)">1 Trillion</button>
+        </div>
+
+        <div class="input-group">
+            <label for="numInput">Enter a number to translate:</label>
+            <input type="number" id="numInput" value="1000000" min="0" oninput="updateUI()">
+        </div>
+
+        <div class="result-card">
+            <div class="romaji-output" id="romajiOut">hyaku-man</div>
+            <div class="kanji-output" id="kanjiOut">100万</div>
+        </div>
+
+        <div class="comparison-grid">
+            <div class="col">
+                <h3>Western (3 Digits)</h3>
+                <div class="digit-block" id="westernDigits">1,000,000</div>
+            </div>
+            <div class="col">
+                <h3>Japanese (4 Digits)</h3>
+                <div class="digit-block" id="japaneseDigits">100<span class="highlight-unit">[万]</span>0000</div>
+            </div>
+        </div>
+
+        <div class="reference-section">
+            <h2>Quick Reference: Kanji & Furigana</h2>
+            <div class="tables-container">
+                <table class="ref-table">
+                    <thead>
+                        <tr>
+                            <th>Number</th>
+                            <th>Kanji (Furigana)</th>
+                            <th>Romaji</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>0</td><td><ruby>零<rt>れい</rt></ruby> / <ruby>〇<rt>まる</rt></ruby></td><td class="romaji-col">rei / maru</td></tr>
+                        <tr><td>1</td><td><ruby>一<rt>いち</rt></ruby></td><td class="romaji-col">ichi</td></tr>
+                        <tr><td>2</td><td><ruby>二<rt>に</rt></ruby></td><td class="romaji-col">ni</td></tr>
+                        <tr><td>3</td><td><ruby>三<rt>さん</rt></ruby></td><td class="romaji-col">san</td></tr>
+                        <tr><td>4</td><td><ruby>四<rt>よん</rt></ruby></td><td class="romaji-col">yon / shi</td></tr>
+                        <tr><td>5</td><td><ruby>五<rt>ご</rt></ruby></td><td class="romaji-col">go</td></tr>
+                        <tr><td>6</td><td><ruby>六<rt>ろく</rt></ruby></td><td class="romaji-col">roku</td></tr>
+                        <tr><td>7</td><td><ruby>七<rt>なな</rt></ruby></td><td class="romaji-col">nana / shichi</td></tr>
+                        <tr><td>8</td><td><ruby>八<rt>はち</rt></ruby></td><td class="romaji-col">hachi</td></tr>
+                        <tr><td>9</td><td><ruby>九<rt>きゅう</rt></ruby></td><td class="romaji-col">kyuu / ku</td></tr>
+                        <tr><td>10</td><td><ruby>十<rt>じゅう</rt></ruby></td><td class="romaji-col">juu</td></tr>
+                    </tbody>
+                </table>
+
+                <table class="ref-table">
+                    <thead>
+                        <tr>
+                            <th>Unit Value</th>
+                            <th>Kanji (Furigana)</th>
+                            <th>Romaji</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>100</td><td><ruby>百<rt>ひゃく</rt></ruby></td><td class="romaji-col">hyaku</td></tr>
+                        <tr><td>1,000</td><td><ruby>千<rt>せん</rt></ruby></td><td class="romaji-col">sen</td></tr>
+                        <tr><td>10,000</td><td><ruby>万<rt>まん</rt></ruby></td><td class="romaji-col">man</td></tr>
+                        <tr><td>100 Million</td><td><ruby>億<rt>おく</rt></ruby></td><td class="romaji-col">oku</td></tr>
+                        <tr><td>1 Trillion</td><td><ruby>兆<rt>ちょう</rt></ruby></td><td class="romaji-col">chou</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        const units = ["", "万", "億", "兆", "京"];
+        const romajiMap = {
+            "万": "man",
+            "億": "oku",
+            "兆": "chou",
+            "京": "kei"
+        };
+
+        function setNumber(num) {
+            document.getElementById('numInput').value = num;
+            updateUI();
+        }
+
+        function updateUI() {
+            const rawVal = document.getElementById('numInput').value;
+            if (!rawVal || rawVal === "") {
+                clearUI();
+                return;
+            }
+
+            const num = BigInt(rawVal);
+            
+            document.getElementById('westernDigits').innerText = new Intl.NumberFormat('en-US').format(num);
+
+            let temp = num;
+            let chunks = [];
+            
+            if (temp === 0n) {
+                document.getElementById('kanjiOut').innerText = "0";
+                document.getElementById('romajiOut').innerText = "zero";
+                document.getElementById('japaneseDigits').innerText = "0";
+                return;
+            }
+
+            while (temp > 0n) {
+                chunks.push(temp % 10000n);
+                temp = temp / 10000n;
+            }
+
+            let kanjiResult = "";
+            let romajiResult = "";
+            let visualResult = "";
+
+            for (let i = chunks.length - 1; i >= 0; i--) {
+                if (chunks[i] > 0n) {
+                    const unitKanji = units[i] || "";
+                    const unitRomaji = romajiMap[unitKanji] ? "-" + romajiMap[unitKanji] : "";
+                    
+                    kanjiResult += chunks[i].toString() + unitKanji;
+                    romajiResult += (romajiResult ? " " : "") + chunks[i].toString() + unitRomaji;
+
+                    let visualNum = chunks[i].toString();
+                    if (i < chunks.length - 1) {
+                        visualNum = visualNum.padStart(4, '0');
+                    }
+                    
+                    visualResult += visualNum;
+                    if (unitKanji) {
+                        visualResult += `<span class="highlight-unit">[${unitKanji}]</span>`;
+                    }
+                } else if (i < chunks.length - 1 && chunks.length > 1) {
+                    visualResult += "0000";
+                    if (units[i]) {
+                        visualResult += `<span class="highlight-unit">[${units[i]}]</span>`;
+                    }
+                }
+            }
+
+            document.getElementById('kanjiOut').innerText = kanjiResult;
+            document.getElementById('romajiOut').innerText = romajiResult.replace(/^-/, '');
+            document.getElementById('japaneseDigits').innerHTML = visualResult;
+        }
+
+        function clearUI() {
+            document.getElementById('kanjiOut').innerText = "-";
+            document.getElementById('romajiOut').innerText = "-";
+            document.getElementById('westernDigits').innerText = "-";
+            document.getElementById('japaneseDigits').innerHTML = "-";
+        }
+
+        updateUI();
+    </script>
+</body>
+</html>
