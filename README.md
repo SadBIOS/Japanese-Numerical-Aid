@@ -38,7 +38,7 @@ git clone https://github.com/Samkaka22/Japanese-Numerical-Aid.git
 
 2. Navigate to the project directory:
 ```bash
-cd Japanese-Numerical-Aid
+cd Japanese-Numerical-Aid-main
 ```
 
 
