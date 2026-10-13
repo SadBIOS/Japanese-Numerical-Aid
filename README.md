@@ -18,10 +18,10 @@ A lightweight, zero-dependency Web application that dynamically converts numbers
 ## File Structure
 
 ```text
-.
-├── index.html   # Main HTML structure & reference guide tables
-├── styles.css   # Modern dark/pastel styles, animations, responsive design
-└── script.js    # Core conversion algorithm using JS BigInt & event listeners
+/root/
+      ├── index.html   # Main HTML structure & reference guide tables
+      ├── styles.css   # Modern dark/pastel styles, animations, responsive design
+      └── script.js    # Core conversion algorithm using JS BigInt & event listeners
 
 ```
 
