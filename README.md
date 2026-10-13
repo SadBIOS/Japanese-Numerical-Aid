@@ -84,9 +84,3 @@ The algorithm inside `script.js` processes numbers using `BigInt` arithmetic:
 * **HTML5**: Semantic tags and `<ruby>` / `<rt>` markup for furigana typography.
 * **CSS3**: Custom properties (variables), Flexbox, CSS Grid, keyframe animations and custom pseudo-elements.
 * **JavaScript (ES6+)**: `BigInt` for high-precision large integer calculation without floating-point overflow.
-
----
-
-## License
-
-This project is open-source and available under the [STFU BRUH WHAT LICENSE](https://mschf.com/).
