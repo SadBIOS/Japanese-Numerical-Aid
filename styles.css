@@ -66,7 +66,7 @@ label {
     color: var(--ink-muted);
 }
 
-input[type="number"] {
+input[type="text"] {
     width: 100%;
     padding: 16px;
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
@@ -78,10 +78,9 @@ input[type="number"] {
     outline: none;
     text-align: left;
     letter-spacing: 0.04em;
-    -moz-appearance: textfield;
 }
 
-input[type="number"]:focus {
+input[type="text"]:focus {
     border-color: var(--border-strong);
 }
 
@@ -173,11 +172,21 @@ input[type="range"]::-moz-range-thumb {
 
 .western-digits {
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-    font-size: 15px;
-    color: var(--ink-muted);
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--highlight);
     padding-top: 14px;
     border-top: 1px solid var(--border);
     word-break: break-all;
+}
+
+.western-words {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    font-size: 14px;
+    color: var(--ink-muted);
+    margin-top: 8px;
+    word-break: break-word;
+    overflow-wrap: anywhere;
 }
 
 .reference-section {
@@ -241,12 +250,6 @@ rt {
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 }
 
-input::-webkit-outer-spin-button,
-input::-webkit-inner-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-}
-
 @media (max-width: 600px) {
     .container {
         padding: 20px;
@@ -256,7 +259,7 @@ input::-webkit-inner-spin-button {
         font-size: 32px;
     }
 
-    input[type="number"] {
+    input[type="text"] {
         font-size: 20px;
     }
 }
