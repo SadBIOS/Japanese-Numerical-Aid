@@ -31,7 +31,7 @@ A lightweight, zero-dependency Web application that dynamically converts numbers
 
 1. Clone or download the repository:
 ```bash
-git clone https://github.com/Samkaka22/Japanese-Numerical-Aid.git
+git clone https://github.com/SadBIOS/Japanese-Numerical-Aid.git
 
 ```
 
