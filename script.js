@@ -1,3 +1,5 @@
+const MAX_VALUE = 1000000000000000n;
+
 const kanjiDigits = ["", "一", "二", "三", "四", "五", "六", "七", "八", "九"];
 const romajiDigits = ["", "ichi", "ni", "san", "yon", "go", "roku", "nana", "hachi", "kyuu"];
 
@@ -13,35 +15,61 @@ const tensRomaji = ["", "juu", "ni-juu", "san-juu", "yon-juu", "go-juu", "roku-j
 const majorUnitsKanji = ["", "万", "億", "兆"];
 const majorUnitsRomaji = ["", "man", "oku", "choo"];
 
+const onesWords = ["", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"];
+const teensWords = ["ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen"];
+const tensWords = ["", "", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety"];
+const shortScaleWords = ["", "thousand", "million", "billion", "trillion", "quadrillion", "quintillion"];
+
 const numInput = document.getElementById('numInput');
 const numSlider = document.getElementById('numSlider');
 const kanjiOut = document.getElementById('kanjiOut');
 const romajiOut = document.getElementById('romajiOut');
 const westernDigits = document.getElementById('westernDigits');
+const westernWords = document.getElementById('westernWords');
 const resultCard = document.getElementById('resultCard');
 
 numInput.addEventListener('input', (e) => {
-    let val = e.target.value;
-    if (val > 1000000000000) { val = 1000000000000; e.target.value = val; }
-    numSlider.value = val || 0;
-    processNumber(val);
+    const cleaned = e.target.value.replace(/[^0-9]/g, '');
+    if (cleaned === "") {
+        e.target.value = "";
+        numSlider.value = 0;
+        processNumber("");
+        return;
+    }
+
+    let num = BigInt(cleaned);
+    if (num > MAX_VALUE) {
+        num = MAX_VALUE;
+    }
+
+    const formatted = formatWithCommas(num);
+    e.target.value = formatted;
+    numSlider.value = Number(num);
+    processNumber(num.toString());
 });
 
 numSlider.addEventListener('input', (e) => {
-    numInput.value = e.target.value;
-    processNumber(e.target.value);
+    const num = BigInt(e.target.value);
+    numInput.value = formatWithCommas(num);
+    processNumber(num.toString());
 });
+
+function formatWithCommas(num) {
+    return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
 
 function processNumber(rawVal) {
     if (!rawVal || rawVal === "") {
         kanjiOut.innerText = "-";
         romajiOut.innerText = "-";
         westernDigits.innerText = "-";
+        westernWords.innerText = "-";
         return;
     }
 
     const num = BigInt(rawVal);
-    westernDigits.innerText = new Intl.NumberFormat('en-US').format(num);
+    westernDigits.innerText = formatWithCommas(num);
+    westernWords.innerText = convertToEnglishWords(num);
 
     const { kanji, romaji } = convertToJapanese(num);
 
@@ -51,6 +79,68 @@ function processNumber(rawVal) {
     resultCard.classList.remove('animate-pop');
     void resultCard.offsetWidth;
     resultCard.classList.add('animate-pop');
+}
+
+function convertChunkToWords(n) {
+    const parts = [];
+    const hundreds = Math.floor(n / 100);
+    const remainder = n % 100;
+
+    if (hundreds > 0) {
+        parts.push(`${onesWords[hundreds]} hundred`);
+    }
+
+    if (remainder > 0) {
+        let remText = "";
+        if (remainder < 10) {
+            remText = onesWords[remainder];
+        } else if (remainder < 20) {
+            remText = teensWords[remainder - 10];
+        } else {
+            const ten = Math.floor(remainder / 10);
+            const one = remainder % 10;
+            remText = tensWords[ten] + (one > 0 ? `-${onesWords[one]}` : "");
+        }
+
+        if (parts.length > 0) {
+            parts.push(`and ${remText}`);
+        } else {
+            parts.push(remText);
+        }
+    }
+
+    return parts.join(" ");
+}
+
+function convertToEnglishWords(num) {
+    if (num === 0n) return "zero";
+
+    let temp = num;
+    const groups = [];
+
+    while (temp > 0n) {
+        groups.push(Number(temp % 1000n));
+        temp = temp / 1000n;
+    }
+
+    const sections = [];
+    for (let i = groups.length - 1; i >= 0; i--) {
+        const g = groups[i];
+        if (g === 0) continue;
+
+        const chunkText = convertChunkToWords(g);
+        const scale = shortScaleWords[i];
+        sections.push(scale ? `${chunkText} ${scale}` : chunkText);
+    }
+
+    if (sections.length >= 2) {
+        const last = sections[sections.length - 1];
+        if (!last.includes(" and ") && groups[0] > 0 && groups[0] < 100) {
+            sections[sections.length - 1] = `and ${last}`;
+        }
+    }
+
+    return sections.join(", ");
 }
 
 function convertToJapanese(num) {
@@ -97,17 +187,18 @@ function convertToJapanese(num) {
         }
 
         if (i > 0) {
-            k += majorUnitsKanji[i];
-            let unitRom = majorUnitsRomaji[i];
+            const unitIdx = Math.min(i, majorUnitsKanji.length - 1);
+            k += majorUnitsKanji[unitIdx];
+            let unitRom = majorUnitsRomaji[unitIdx];
             if (c === 1) {
-                if (i === 3) {
+                if (unitIdx === 3) {
                     r = ["icchoo"];
                 } else {
                     r = ["ichi-" + unitRom];
                 }
             } else {
                 let lastIdx = r.length - 1;
-                if (i === 3 && r[lastIdx] === "juu") {
+                if (unitIdx === 3 && r[lastIdx] === "juu") {
                     r[lastIdx] = "jucchoo";
                 } else {
                     r.push(unitRom);
@@ -130,4 +221,4 @@ function convertToJapanese(num) {
     };
 }
 
-processNumber(numInput.value);
+processNumber(numInput.value.replace(/[^0-9]/g, ''));
