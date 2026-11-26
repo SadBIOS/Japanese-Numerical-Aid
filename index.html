@@ -12,11 +12,11 @@
         <h1>Western to Japanese Numeral Engine</h1>
         
         <div class="input-section">
-            <label for="numInput">Type a number or drag the slider (0 to 1 Trillion)</label>
-            <input type="number" id="numInput" value="12345678" min="0" max="1000000000000">
+            <label for="numInput">Type a number or drag the slider (0 to 1 Quadrillion)</label>
+            <input type="text" inputmode="numeric" id="numInput" value="12,345,678" autocomplete="off">
             
             <div class="slider-container">
-                <input type="range" id="numSlider" value="12345678" min="0" max="1000000000000" step="1">
+                <input type="range" id="numSlider" value="12345678" min="0" max="1000000000000000" step="1">
             </div>
         </div>
 
@@ -24,6 +24,7 @@
             <div class="romaji-output" id="romajiOut">issen ni-hyaku san-juu yon-man go-sen roppyaku nana-juu hachi</div>
             <div class="kanji-output" id="kanjiOut">一千二百三十四万五千六百七十八</div>
             <div class="western-digits" id="westernDigits">12,345,678</div>
+            <div class="western-words" id="westernWords">twelve million, three hundred and forty-five thousand, six hundred and seventy-eight</div>
         </div>
 
         <div class="reference-section">
