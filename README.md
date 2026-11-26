@@ -34,7 +34,7 @@ A lightweight, zero-dependency Web application that dynamically converts numbers
 git clone https://github.com/SadBIOS/Japanese-Numerical-Aid.git
 
 ```
-
+> Or download any version from form releases.
 
 2. Navigate to the project directory:
 ```bash
