@@ -1,6 +1,6 @@
 # Western to Japanese Numeral Engine
 
-A lightweight, zero-dependency Web application that dynamically converts numbers from **0 to 1 Trillion** into Japanese Kanji and Romaji in real time.
+A lightweight, zero-dependency Web application that dynamically converts numbers from **0 to 1 Quadrillion** into Japanese Kanji and Romaji in real time.
 
 
 ## Features
