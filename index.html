@@ -9,10 +9,13 @@
 <body>
 
     <div class="container">
-        <h1>Western to Japanese Numeral Engine</h1>
+        <div class="header-bar">
+            <h1>Western to Japanese Numeral Engine</h1>
+            <button type="button" id="modeToggle" class="mode-btn">Decimal Mode</button>
+        </div>
         
         <div class="input-section">
-            <label for="numInput">Type a number or drag the slider (0 to 1 Quadrillion)</label>
+            <label for="numInput" id="inputLabel">Type a number or drag the slider (0 to 1 Quadrillion)</label>
             <input type="text" inputmode="numeric" id="numInput" value="12,345,678" autocomplete="off">
             
             <div class="slider-container">
