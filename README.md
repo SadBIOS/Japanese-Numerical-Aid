@@ -2,6 +2,7 @@
 
 A lightweight, zero-dependency Web application that dynamically converts numbers from **0 to 1 Quadrillion** into Japanese Kanji and Romaji in real time.
 
+![placeholder for png cycler](cycle_demo.png)
 
 ## Features
 
