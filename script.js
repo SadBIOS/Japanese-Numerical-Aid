@@ -11,7 +11,7 @@ const tensKanji = ["", "十", "二十", "三十", "四十", "五十", "六十", 
 const tensRomaji = ["", "juu", "ni-juu", "san-juu", "yon-juu", "go-juu", "roku-juu", "nana-juu", "hachi-juu", "kyuu-juu"];
 
 const majorUnitsKanji = ["", "万", "億", "兆"];
-const majorUnitsRomaji = ["", "man", "oku", "chou"];
+const majorUnitsRomaji = ["", "man", "oku", "choo"];
 
 const numInput = document.getElementById('numInput');
 const numSlider = document.getElementById('numSlider');
@@ -44,7 +44,7 @@ function processNumber(rawVal) {
     westernDigits.innerText = new Intl.NumberFormat('en-US').format(num);
 
     const { kanji, romaji } = convertToJapanese(num);
-    
+
     kanjiOut.innerText = kanji;
     romajiOut.innerText = romaji;
 
@@ -80,29 +80,49 @@ function convertToJapanese(num) {
         let ten = Math.floor((c % 100) / 10);
         let one = c % 10;
 
-        if (thou > 0) { k += thousandsKanji[thou]; r.push(thousandsRomaji[thou]); }
+        if (thou > 0) {
+            k += thousandsKanji[thou];
+            let tRom = thousandsRomaji[thou];
+            if (i > 0 && thou === 1) {
+                tRom = "issen";
+            }
+            r.push(tRom);
+        }
         if (hund > 0) { k += hundredsKanji[hund]; r.push(hundredsRomaji[hund]); }
         if (ten > 0) { k += tensKanji[ten]; r.push(tensRomaji[ten]); }
-        
+
         if (one > 0) {
-            k += kanjiDigits[one]; 
+            k += kanjiDigits[one];
             r.push(romajiDigits[one]);
         }
 
         if (i > 0) {
+            k += majorUnitsKanji[i];
+            let unitRom = majorUnitsRomaji[i];
             if (c === 1) {
-                k = "一";
-                r = ["ichi"];
+                if (i === 3) {
+                    r = ["icchoo"];
+                } else {
+                    r = ["ichi-" + unitRom];
+                }
+            } else {
+                let lastIdx = r.length - 1;
+                if (i === 3 && r[lastIdx] === "juu") {
+                    r[lastIdx] = "jucchoo";
+                } else {
+                    r.push(unitRom);
+                }
             }
-            k += majorUnitsKanji[i-1];
-            r.push(majorUnitsRomaji[i-1]);
         }
 
         resultKanji += k;
         resultRomaji += (resultRomaji ? " " : "") + r.join("-");
     }
 
-    resultRomaji = resultRomaji.replace(/-man/g, ' man').replace(/-oku/g, ' oku').replace(/-chou/g, ' chou');
+    resultRomaji = resultRomaji
+        .replace(/-man/g, ' man')
+        .replace(/-oku/g, ' oku')
+        .replace(/-choo/g, ' choo');
 
     return {
         kanji: resultKanji,
