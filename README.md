@@ -12,7 +12,7 @@ A lightweight, zero-dependency Web application that dynamically converts numbers
 - **Interactive Reference Guide**: Built-in reference table containing single digits, units, Kanji, Romaji, and Furigana annotations using HTML `<ruby>` tags.
 - **Modern Dark UI**: Pure CSS styling with custom glow effects, smooth CSS animations, pastel accents, and custom range slider thumb styling.
 - **Zero External Dependencies**: Pure vanilla HTML5, CSS3, and JavaScript (ES6+ with `BigInt` support).
-
+- **Decimal Number Support**: Can display upto 1000.9999 in decimal (as the Japanese Number system handles decimals in a very straight forward way).
 ---
 
 ## File Structure
