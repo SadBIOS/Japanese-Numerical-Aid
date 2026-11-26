@@ -1,7 +1,39 @@
-const MAX_VALUE = 1000000000000000n;
+const MAX_INTEGER_VALUE = 1000000000000000n;
+const MAX_DECIMAL_VALUE = 1000;
+const MAX_DECIMAL_DIGITS = 4;
+
+let isDecimalMode = false;
+let savedIntegerRaw = "12345678";
+let savedDecimalRaw = "123.4567";
 
 const kanjiDigits = ["", "一", "二", "三", "四", "五", "六", "七", "八", "九"];
 const romajiDigits = ["", "ichi", "ni", "san", "yon", "go", "roku", "nana", "hachi", "kyuu"];
+
+const decimalDigitKanji = {
+    "0": "零",
+    "1": "一",
+    "2": "二",
+    "3": "三",
+    "4": "四",
+    "5": "五",
+    "6": "六",
+    "7": "七",
+    "8": "八",
+    "9": "九"
+};
+
+const decimalDigitRomaji = {
+    "0": "rei",
+    "1": "ichi",
+    "2": "ni",
+    "3": "san",
+    "4": "yon",
+    "5": "go",
+    "6": "roku",
+    "7": "nana",
+    "8": "hachi",
+    "9": "kyuu"
+};
 
 const hundredsKanji = ["", "百", "二百", "三百", "四百", "五百", "六百", "七百", "八百", "九百"];
 const hundredsRomaji = ["", "hyaku", "ni-hyaku", "san-byaku", "yon-hyaku", "go-hyaku", "roppyaku", "nana-hyaku", "happyaku", "kyuu-hyaku"];
@@ -20,6 +52,8 @@ const teensWords = ["ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen"
 const tensWords = ["", "", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety"];
 const shortScaleWords = ["", "thousand", "million", "billion", "trillion", "quadrillion", "quintillion"];
 
+const modeToggle = document.getElementById('modeToggle');
+const inputLabel = document.getElementById('inputLabel');
 const numInput = document.getElementById('numInput');
 const numSlider = document.getElementById('numSlider');
 const kanjiOut = document.getElementById('kanjiOut');
@@ -28,37 +62,134 @@ const westernDigits = document.getElementById('westernDigits');
 const westernWords = document.getElementById('westernWords');
 const resultCard = document.getElementById('resultCard');
 
+modeToggle.addEventListener('click', () => {
+    if (!isDecimalMode) {
+        savedIntegerRaw = numInput.value.replace(/[^0-9]/g, '');
+        isDecimalMode = true;
+        modeToggle.textContent = "Integer Mode";
+        modeToggle.classList.add('active');
+        inputLabel.textContent = "Type a decimal number or drag the slider (0 to 1,000, max 4 decimals)";
+        numInput.setAttribute("inputmode", "decimal");
+        numSlider.min = "0";
+        numSlider.max = "1000";
+        numSlider.step = "0.0001";
+        applyDecimalInput(savedDecimalRaw);
+    } else {
+        savedDecimalRaw = sanitizeDecimal(numInput.value);
+        isDecimalMode = false;
+        modeToggle.textContent = "Decimal Mode";
+        modeToggle.classList.remove('active');
+        inputLabel.textContent = "Type a number or drag the slider (0 to 1 Quintillion)";
+        numInput.setAttribute("inputmode", "numeric");
+        numSlider.min = "0";
+        numSlider.max = "1000000000000000";
+        numSlider.step = "1";
+        applyIntegerInput(savedIntegerRaw);
+    }
+});
+
 numInput.addEventListener('input', (e) => {
-    const cleaned = e.target.value.replace(/[^0-9]/g, '');
-    if (cleaned === "") {
-        e.target.value = "";
+    if (isDecimalMode) {
+        applyDecimalInput(e.target.value);
+    } else {
+        applyIntegerInput(e.target.value);
+    }
+});
+
+numSlider.addEventListener('input', (e) => {
+    if (isDecimalMode) {
+        const raw = Number(e.target.value).toFixed(MAX_DECIMAL_DIGITS).replace(/\.?0+$/, '');
+        applyDecimalInput(raw);
+    } else {
+        const num = BigInt(e.target.value);
+        applyIntegerInput(num.toString());
+    }
+});
+
+function sanitizeDecimal(raw) {
+    let cleaned = raw.replace(/[^0-9.]/g, '');
+    const firstDot = cleaned.indexOf('.');
+    if (firstDot !== -1) {
+        const intPart = cleaned.slice(0, firstDot);
+        const fracPart = cleaned.slice(firstDot + 1).replace(/\./g, '').slice(0, MAX_DECIMAL_DIGITS);
+        cleaned = `${intPart}.${fracPart}`;
+    }
+
+    if (cleaned === "" || cleaned === ".") {
+        return cleaned === "." ? "." : "";
+    }
+
+    const parts = cleaned.split('.');
+    let intNum = Number(parts[0] || "0");
+    if (intNum > MAX_DECIMAL_VALUE) {
+        intNum = MAX_DECIMAL_VALUE;
+        return `${MAX_DECIMAL_VALUE}`;
+    }
+    if (intNum === MAX_DECIMAL_VALUE && parts.length === 2 && parts[1].length > 0) {
+        return `${MAX_DECIMAL_VALUE}`;
+    }
+
+    const cleanInt = parts[0] === "" ? "" : String(intNum);
+    return parts.length === 2 ? `${cleanInt}.${parts[1]}` : cleanInt;
+}
+
+function formatDecimalForInput(sanitized) {
+    if (sanitized === "") return "";
+    if (sanitized === ".") return ".";
+    const parts = sanitized.split('.');
+    const intFormatted = parts[0] === "" ? "" : BigInt(parts[0]).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    return parts.length === 2 ? `${intFormatted}.${parts[1]}` : intFormatted;
+}
+
+function applyDecimalInput(raw) {
+    const sanitized = sanitizeDecimal(raw);
+    savedDecimalRaw = sanitized;
+    numInput.value = formatDecimalForInput(sanitized);
+
+    if (sanitized === "" || sanitized === ".") {
         numSlider.value = 0;
-        processNumber("");
+        processDecimal("");
+        return;
+    }
+
+    const numericVal = Math.min(MAX_DECIMAL_VALUE, Number(sanitized));
+    numSlider.value = numericVal;
+    processDecimal(sanitized);
+}
+
+function applyIntegerInput(raw) {
+    const cleaned = raw.replace(/[^0-9]/g, '');
+    savedIntegerRaw = cleaned;
+
+    if (cleaned === "") {
+        numInput.value = "";
+        numSlider.value = 0;
+        processInteger("");
         return;
     }
 
     let num = BigInt(cleaned);
-    if (num > MAX_VALUE) {
-        num = MAX_VALUE;
+    if (num > MAX_INTEGER_VALUE) {
+        num = MAX_INTEGER_VALUE;
+        savedIntegerRaw = num.toString();
     }
 
-    const formatted = formatWithCommas(num);
-    e.target.value = formatted;
-    numSlider.value = Number(num);
-    processNumber(num.toString());
-});
-
-numSlider.addEventListener('input', (e) => {
-    const num = BigInt(e.target.value);
     numInput.value = formatWithCommas(num);
-    processNumber(num.toString());
-});
+    numSlider.value = Number(num);
+    processInteger(num.toString());
+}
 
 function formatWithCommas(num) {
     return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
 
-function processNumber(rawVal) {
+function triggerPop() {
+    resultCard.classList.remove('animate-pop');
+    void resultCard.offsetWidth;
+    resultCard.classList.add('animate-pop');
+}
+
+function processInteger(rawVal) {
     if (!rawVal || rawVal === "") {
         kanjiOut.innerText = "-";
         romajiOut.innerText = "-";
@@ -76,9 +207,51 @@ function processNumber(rawVal) {
     kanjiOut.innerText = kanji;
     romajiOut.innerText = romaji;
 
-    resultCard.classList.remove('animate-pop');
-    void resultCard.offsetWidth;
-    resultCard.classList.add('animate-pop');
+    triggerPop();
+}
+
+function processDecimal(rawVal) {
+    if (!rawVal || rawVal === "") {
+        kanjiOut.innerText = "-";
+        romajiOut.innerText = "-";
+        westernDigits.innerText = "-";
+        westernWords.innerText = "-";
+        return;
+    }
+
+    const parts = rawVal.split('.');
+    const intPart = parts[0] === "" ? 0n : BigInt(parts[0]);
+    const hasDot = parts.length === 2;
+    const fracPart = hasDot ? parts[1] : "";
+
+    const formattedInt = formatWithCommas(intPart);
+    westernDigits.innerText = hasDot ? `${formattedInt}.${fracPart}` : formattedInt;
+
+    const intWords = convertToEnglishWords(intPart);
+    if (hasDot && fracPart.length > 0) {
+        const fracWords = fracPart.split('').map(d => d === "0" ? "zero" : onesWords[Number(d)]).join(" ");
+        westernWords.innerText = `${intWords} point ${fracWords}`;
+    } else if (hasDot) {
+        westernWords.innerText = `${intWords} point`;
+    } else {
+        westernWords.innerText = intWords;
+    }
+
+    const intJap = convertToJapanese(intPart);
+    if (hasDot && fracPart.length > 0) {
+        const fracKanji = fracPart.split('').map(d => decimalDigitKanji[d]).join("");
+        const fracRomaji = fracPart.split('').map(d => decimalDigitRomaji[d]).join("-");
+        kanjiOut.innerText = `${intJap.kanji}点${fracKanji}`;
+        romajiOut.innerText = `${intJap.romaji} ten ${fracRomaji}`;
+    } else if (hasDot) {
+        kanjiOut.innerText = `${intJap.kanji}点`;
+        romajiOut.innerText = `${intJap.romaji} ten`;
+    } else {
+        kanjiOut.innerText = intJap.kanji;
+        romajiOut.innerText = intJap.romaji;
+    }
+
+    triggerPop();
 }
 
 function convertChunkToWords(n) {
@@ -221,4 +394,4 @@ function convertToJapanese(num) {
     };
 }
 
-processNumber(numInput.value.replace(/[^0-9]/g, ''));
+applyIntegerInput(numInput.value.replace(/[^0-9]/g, ''));
