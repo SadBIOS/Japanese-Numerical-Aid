@@ -10,9 +10,9 @@ A lightweight, zero-dependency Web application that dynamically converts numbers
 - **Full Spectrum Conversion**: Accurately breaks down small and large numbers up to $10^{12}$ (兆 - *chou*), properly applying Japanese 4-digit (万, 億, 兆) grouping rules.
 - **Phonetic & Kanji Render**: Generates both standard Kanji representation and formatted Romaji pronunciation.
 - **Responsive Word-Wrapping**: Prevents layout breakages on ultra-large numbers using overflow-wrap rules.
-- **Interactive Reference Guide**: Built-in reference table containing single digits, units, Kanji, Romaji, and Furigana annotations using HTML `<ruby>` tags.
-- **Modern Dark UI**: Pure CSS styling with custom glow effects, smooth CSS animations, pastel accents, and custom range slider thumb styling.
-- **Zero External Dependencies**: Pure vanilla HTML5, CSS3, and JavaScript (ES6+ with `BigInt` support).
+- **Interactive Reference Guide**: Built-in reference table containing single digits, units, Kanji, Romaji and Furigana annotations using HTML `<ruby>` tags.
+- **Modern Dark UI**: Pure CSS styling with custom glow effects, smooth CSS animations, pastel accents and custom range slider thumb styling.
+- **Zero External Dependencies**: Pure vanilla HTML5, CSS3 and JavaScript (ES6+ with `BigInt` support).
 - **Decimal Number Support**: Can display upto 1000.9999 in decimal (as the Japanese Number system handles decimals in a very straight forward way).
 ---
 
